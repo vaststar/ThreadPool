@@ -36,14 +36,10 @@ ThreadPool::ThreadPool(uint32_t maxpool)
 ThreadPool::~ThreadPool()
 {
 	{
-		// 拿锁
 		std::unique_lock<std::mutex> lock(_p->tasks_mutex);
-		// 停止标志置true
 		_p->stop = true;
 	}
-	// 通知所有工作线程，唤醒后因为stop为true了，所以都会结束
 	_p->condition.notify_all();
-	// 等待所有工作线程结束
 	for (std::thread &worker : _p->workers) {
 		worker.join();
 	}
@@ -53,12 +49,10 @@ ThreadPool::~ThreadPool()
 
 void ThreadPool::InitPool(uint32_t poolNumber)
 {
-	for (uint32_t i = 0; i < poolNumber; ++i)
-	{
+	for (uint32_t i = 0; i < poolNumber; ++i){
 		_p->workers.emplace_back(
 			[this]() {
-				while (true)
-				{
+				while (true){
 					std::function<void()> task;
 					{
 						std::unique_lock<std::mutex> lock(this->_p->tasks_mutex);
@@ -84,10 +78,7 @@ void ThreadPool::InitPool(uint32_t poolNumber)
 void ThreadPool::PushFuncPri(std::function<void()> &&task)
 {
 	{
-		// 独占拿锁
 		std::unique_lock<std::mutex> lock(_p->tasks_mutex);
-
-		// don't allow enqueueing after stopping the pool
 		// 不允许入队到已经停止的线程池
 		if (_p->stop) {
 			throw std::runtime_error("enqueue on stopped ThreadPool");
