@@ -1,6 +1,7 @@
 #ifndef ThreadPool_h__
 #define ThreadPool_h__
 
+#include <memory>
 #include <stdint.h>
 #include <future>
 #include <functional>
@@ -10,6 +11,10 @@ class THREADPOOL_EXPORT ThreadPool
 {
 public:
 	explicit ThreadPool(uint32_t maxpool = 5000);
+	ThreadPool(ThreadPool &&) = delete;
+	ThreadPool(const ThreadPool &) = delete;
+	ThreadPool& operator=(const ThreadPool &) = delete;
+	ThreadPool& operator=(ThreadPool &&) = delete;
 	~ThreadPool();
 public:
 	template<typename Fun, typename... Args>
@@ -19,7 +24,7 @@ private:
 	void PushFuncPri(std::function<void()>&&);
 private:
 	class DataPrivate;
-	DataPrivate *_p;
+	std::shared_ptr<DataPrivate> _p;
 };
 
 template<typename Fun, typename... Args>
@@ -27,11 +32,11 @@ auto ThreadPool::PushFunc(Fun &&f, Args&&... args) ->std::future<typename std::r
 {
 	using return_type = typename std::result_of<Fun(Args...)>::type;
 
-	// 将任务函数和其参数绑定，构建一个packaged_task
+	// 灏嗕换鍔″嚱鏁板拰鍏跺弬鏁扮粦瀹氾紝鏋勫缓涓�涓猵ackaged_task
 	auto task = std::make_shared< std::packaged_task<return_type()> >(
 		std::bind(std::forward<Fun>(f), std::forward<Args>(args)...)
 		);
-	// 获取任务的future
+	// 鑾峰彇浠诲姟鐨刦uture
 	std::future<return_type> res = task->get_future();
 	PushFuncPri([task] {(*task)(); });
 	return res;

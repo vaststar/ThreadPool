@@ -28,7 +28,7 @@ public:
 };
 
 ThreadPool::ThreadPool(uint32_t maxpool)
-	:_p(new DataPrivate())
+	:_p(std::make_shared<DataPrivate>())
 {
 	InitPool(maxpool);
 }
@@ -43,8 +43,6 @@ ThreadPool::~ThreadPool()
 	for (std::thread &worker : _p->workers) {
 		worker.join();
 	}
-	delete _p;
-	_p = nullptr;
 }
 
 void ThreadPool::InitPool(uint32_t poolNumber)
@@ -56,22 +54,19 @@ void ThreadPool::InitPool(uint32_t poolNumber)
 					std::function<void()> task;
 					{
 						std::unique_lock<std::mutex> lock(this->_p->tasks_mutex);
-						// Èç¹ûµ±Ç°ÊÇÍ£Ö¹×´Ì¬»òÕßÈÎÎñÎª¿Õ£¬ÔòµÈ´ý
 						this->_p->condition.wait(lock,[this] { return this->_p->stop || !this->_p->tasks.empty(); });
-						// Èç¹ûÏß³Ì³ØÍ£Ö¹»òÕßÈÎÎñ¶ÓÁÐÎª¿Õ£¬½áÊø·µ»Ø
 						if (this->_p->stop && this->_p->tasks.empty()) return;
 						
-						// È¡µÃÈÎÎñ¶ÓÊ×ÈÎÎñ,ÒÆ¶¯¹¹Ôì
+						// å–å¾—ä»»åŠ¡é˜Ÿé¦–ä»»åŠ¡,ç§»åŠ¨æž„é€ 
 						task = std::move(this->_p->tasks.front());
-						// ´Ó¶ÓÁÐÒÆ³ý
+						// ä»Žé˜Ÿåˆ—ç§»é™¤
 						this->_p->tasks.pop();
 					}
-					// Ö´ÐÐÈÎÎñ
+					// æ‰§è¡Œä»»åŠ¡
 					task();
 				}
 			}
 		);
-
 	}
 }
 
@@ -79,11 +74,8 @@ void ThreadPool::PushFuncPri(std::function<void()> &&task)
 {
 	{
 		std::unique_lock<std::mutex> lock(_p->tasks_mutex);
-		// ²»ÔÊÐíÈë¶Óµ½ÒÑ¾­Í£Ö¹µÄÏß³Ì³Ø
-		if (_p->stop) {
-			throw std::runtime_error("enqueue on stopped ThreadPool");
-		}
-		// ½«ÈÎÎñÌí¼Óµ½ÈÎÎñ¶ÓÁÐ
+		if (_p->stop) return;
+		// å°†ä»»åŠ¡æ·»åŠ åˆ°ä»»åŠ¡é˜Ÿåˆ—
 		_p->tasks.emplace(task);
 	}
 	_p->condition.notify_one();
