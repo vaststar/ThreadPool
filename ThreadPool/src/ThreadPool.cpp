@@ -16,7 +16,7 @@ class ThreadPoolTask
 {
 public:
 	ThreadPoolTask(){};
-	ThreadPoolTask(uint32_t taskLevel, std::string taskTag, std::function<void()> functionTask)
+	ThreadPoolTask(uint32_t taskLevel, std::string taskTag, std::function<void()> &&functionTask)
 		:m_taskLevel(taskLevel),m_taskTag(std::move(taskTag)),m_functionTask(std::move(functionTask))
 	{
 
@@ -123,13 +123,13 @@ void ThreadPool::pushFuncPri(std::string functionTag, uint32_t urgentLevel, std:
 		{
 			if(*it >= urgentLevel)
 			{
-				_p->tasks.push_back(ThreadPoolTask(urgentLevel,std::move(functionTag),task));
+				_p->tasks.push_back(ThreadPoolTask(urgentLevel,std::move(functionTag),std::move(task)));
 				break;
 			}
 		}
 		if(_p->tasks.empty())
 		{
-			_p->tasks.push_back(ThreadPoolTask(urgentLevel,std::move(functionTag),task));
+			_p->tasks.push_back(ThreadPoolTask(urgentLevel,std::move(functionTag),std::move(task)));
 		}
 	}
 	_p->condition.notify_one();
