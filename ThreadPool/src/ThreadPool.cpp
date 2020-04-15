@@ -107,7 +107,7 @@ void ThreadPool::initPool(uint32_t poolNumber)
 	}
 }
 
-void ThreadPool::enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()> &&task)
+void ThreadPool::enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()> task)
 {
 	pushFuncPri(functionTag,std::move(urgentLevel),std::move(task));
 }

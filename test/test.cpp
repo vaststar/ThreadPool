@@ -18,17 +18,18 @@ void test_future_api()
 		std::cout<<tt.get()<<std::endl;
 	}
 }
-void testF() {  }
+
 void test_normal_api()
 {
-	std::function<void()> testFunc = [](){std::this_thread::sleep_for(std::chrono::seconds(1)); std::cout << 1; };
+	auto testFunc = [](int i){std::this_thread::sleep_for(std::chrono::seconds(1)); std::cout << i*i; };
 	ThreadPool pool(1,"mormal-mode");
 	//test future mode
 	std::vector<std::future<int>> test;
 	for (int i = 0; i < 20; ++i) {
-		test.push_back(pool.enqueueFunc("testNormalFunc-"+std::to_string(i),0, testF));
+		pool.enqueueFunc("testNormalFunc-"+std::to_string(i),0, std::bind(testFunc,i));
 	}
 }
+
 int main(int argc, char* argv[])
 {
 	if(argc >= 2)
