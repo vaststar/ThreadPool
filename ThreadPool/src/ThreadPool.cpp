@@ -11,7 +11,7 @@
 #include <ostream>
 #include <sstream>
 
-static void OutPut(std::string messages){std::ostringstream _oss; _oss << messages;std::cout<<"will execute function:["<<_oss.str()<<"]"<<std::endl;};
+static void OutPut(std::string messages){std::ostringstream _oss; _oss << messages;std::cout<<_oss.str()<<std::endl;};
 class ThreadPoolTask
 {
 public:
@@ -23,7 +23,7 @@ public:
 	}
 	void execute()
 	{
-		OutPut(m_taskTag);
+		OutPut("will execute function:["+m_taskTag+"]");
 		m_functionTask();
 	}
 	bool operator<(const ThreadPoolTask &rls)
