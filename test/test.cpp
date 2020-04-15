@@ -1,5 +1,6 @@
 #include "ThreadPool.h"
 
+#include <vector>
 #include <string>
 #include <iostream>
 #include <functional>

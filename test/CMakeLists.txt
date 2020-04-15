@@ -6,4 +6,4 @@ add_executable(testPool ${DIR_SRCS})
 target_link_libraries(testPool PUBLIC ThreadPool)
 
 add_test (NAME MyTest COMMAND testPool future)
-# add_test (NAME MyTest1 COMMAND testPool normal)
+add_test (NAME MyTest1 COMMAND testPool normal)
