@@ -16,7 +16,7 @@ class ThreadPoolTask
 {
 public:
 	ThreadPoolTask(){};
-	ThreadPoolTask(uint32_t taskLevel, std::string taskTag, std::function<void()> &&functionTask)
+	ThreadPoolTask(uint32_t taskLevel, std::string taskTag, std::function<void()> functionTask)
 		:m_taskLevel(taskLevel),m_taskTag(std::move(taskTag)),m_functionTask(std::move(functionTask))
 	{
 
@@ -107,9 +107,9 @@ void ThreadPool::initPool(uint32_t poolNumber)
 	}
 }
 
-void ThreadPool::enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()> &&task)
+void ThreadPool::enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()> task)
 {
-	pushFuncPri(functionTag,std::move(urgentLevel),std::move(task));
+	pushFuncPri(std::move(functionTag),urgentLevel,std::move(task));
 }
 
 void ThreadPool::pushFuncPri(std::string functionTag, uint32_t urgentLevel, std::function<void()> &&task)
