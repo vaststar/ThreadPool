@@ -21,7 +21,7 @@ public:
 	template<typename Fun, typename... Args>
 	auto enqueueFutureFunc(std::string functionTag, uint32_t urgentLevel, Fun &&f, Args&&... args)->std::future<typename std::result_of<Fun(Args...)>::type>;
 	/*just enqueue function*/
-	void enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()>);
+	void enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()> &&);
 private:
 	void initPool(uint32_t poolNumber);
 	void pushFuncPri(std::string functionTag, uint32_t urgentLevel, std::function<void()>&&);
