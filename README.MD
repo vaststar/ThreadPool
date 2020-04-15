@@ -14,8 +14,9 @@ A very nice thread pool in c++11 written by Thomas Zhu.
 
 ## Using in code
 * `#include "ThreadPool.h"`
-* create threadpool object, `ThreadPool pool(4);`
-* push your function, `pool.PushFunc(functionname,params);`
+* create threadpool object, `ThreadPool pool(4,"testpool");`
+* push your function, `pool.enqueueFunc("test func",1,std::bind(functionname,params));`
+* Or get future function `auto temp = pool.enqueueFutureFunc("test func",1,functionname,params); auto result = temp.get();`
 
 # Requirement
 * >= c++11
