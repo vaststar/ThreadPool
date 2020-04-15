@@ -5,4 +5,5 @@ aux_source_directory(${CMAKE_CURRENT_LIST_DIR} DIR_SRCS)
 add_executable(testPool ${DIR_SRCS})
 target_link_libraries(testPool PUBLIC ThreadPool)
 
-add_test (NAME MyTest COMMAND testPool)
+add_test (NAME MyTest COMMAND testPool future)
+add_test (NAME MyTest1 COMMAND testPool normal)

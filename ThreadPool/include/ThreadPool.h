@@ -10,25 +10,28 @@
 class THREADPOOL_EXPORT ThreadPool
 {
 public:
-	explicit ThreadPool(uint32_t maxpool = 5000);
+	ThreadPool(uint32_t maxpool = 5000, std::string poolName = "default-thread-pool");
 	ThreadPool(ThreadPool &&) = delete;
 	ThreadPool(const ThreadPool &) = delete;
 	ThreadPool& operator=(const ThreadPool &) = delete;
 	ThreadPool& operator=(ThreadPool &&) = delete;
 	~ThreadPool();
 public:
+	/*enqueue fuction and get std::future result to wait*/
 	template<typename Fun, typename... Args>
-	auto PushFunc(Fun &&f, Args&&... args)->std::future<typename std::result_of<Fun(Args...)>::type>;
+	auto enqueueFutureFunc(std::string functionTag, uint32_t urgentLevel, Fun &&f, Args&&... args)->std::future<typename std::result_of<Fun(Args...)>::type>;
+	/*just enqueue function*/
+	void enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()>&&);
 private:
-	void InitPool(uint32_t poolNumber);
-	void PushFuncPri(std::function<void()>&&);
+	void initPool(uint32_t poolNumber);
+	void pushFuncPri(std::string functionTag, uint32_t urgentLevel, std::function<void()>&&);
 private:
 	class DataPrivate;
 	std::shared_ptr<DataPrivate> _p;
 };
 
 template<typename Fun, typename... Args>
-auto ThreadPool::PushFunc(Fun &&f, Args&&... args) ->std::future<typename std::result_of<Fun(Args...)>::type>
+auto ThreadPool::enqueueFutureFunc(std::string functionTag, uint32_t urgentLevel, Fun &&f, Args&&... args) ->std::future<typename std::result_of<Fun(Args...)>::type>
 {
 	using return_type = typename std::result_of<Fun(Args...)>::type;
 
@@ -38,8 +41,7 @@ auto ThreadPool::PushFunc(Fun &&f, Args&&... args) ->std::future<typename std::r
 		);
 	// 获取任务的future
 	std::future<return_type> res = task->get_future();
-	PushFuncPri([task] {(*task)(); });
+	pushFuncPri(std::move(functionTag), urgentLevel, [task] {(*task)();});
 	return res;
 }
-
 #endif // ThreadPool_h__
