@@ -33,7 +33,7 @@ install(TARGETS ${PROJECT_NAME}
 
 install(EXPORT ${PROJECT_NAME}Config 
         DESTINATION cmake
-        NAMESPACE ThreadPoolExport::
+        NAMESPACE ${PROJECT_NAME}Export::
         )
 
 ##for project tree view
