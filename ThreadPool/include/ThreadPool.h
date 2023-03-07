@@ -10,6 +10,13 @@
 class THREADPOOL_EXPORT ThreadPool
 {
 public:
+	enum class ThreadLevel:uint32_t{
+		Level_Urgent = 0,
+		Level_High,
+		Level_Normal,
+		Level_Low
+	};
+public:
 	ThreadPool(uint32_t maxpool = 5000, std::string poolName = "default-thread-pool");
 	ThreadPool(ThreadPool &&) = delete;
 	ThreadPool(const ThreadPool &) = delete;
@@ -19,19 +26,19 @@ public:
 public:
 	/*enqueue fuction and get std::future result to wait*/
 	template<typename Fun, typename... Args>
-	auto enqueueFutureFunc(std::string functionTag, uint32_t urgentLevel, Fun &&f, Args&&... args)->std::future<typename std::result_of<Fun(Args...)>::type>;
+	auto enqueueFutureFunc(std::string functionTag, ThreadLevel urgentLevel, Fun &&f, Args&&... args)->std::future<typename std::result_of<Fun(Args...)>::type>;
 	/*just enqueue function*/
-	void enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()> func);
+	void enqueueFunc(std::string functionTag, ThreadLevel urgentLevel, std::function<void()> func);
 private:
 	void initPool(uint32_t poolNumber);
-	void pushFuncPri(std::string functionTag, uint32_t urgentLevel, std::function<void()>&&);
+	void pushFuncPri(std::string functionTag, ThreadLevel urgentLevel, std::function<void()>&&);
 private:
 	class DataPrivate;
 	std::shared_ptr<DataPrivate> _p;
 };
 
 template<typename Fun, typename... Args>
-auto ThreadPool::enqueueFutureFunc(std::string functionTag, uint32_t urgentLevel, Fun &&f, Args&&... args) ->std::future<typename std::result_of<Fun(Args...)>::type>
+auto ThreadPool::enqueueFutureFunc(std::string functionTag, ThreadLevel urgentLevel, Fun &&f, Args&&... args) ->std::future<typename std::result_of<Fun(Args...)>::type>
 {
 	using return_type = typename std::result_of<Fun(Args...)>::type;
 

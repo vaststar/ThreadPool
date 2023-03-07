@@ -16,30 +16,23 @@ class ThreadPoolTask
 {
 public:
 	ThreadPoolTask(){};
-	ThreadPoolTask(uint32_t taskLevel, std::string taskTag, std::function<void()> functionTask)
+	ThreadPoolTask(ThreadPool::ThreadLevel taskLevel, std::string taskTag, std::function<void()> functionTask)
 		:m_taskLevel(taskLevel),m_taskTag(std::move(taskTag)),m_functionTask(std::move(functionTask))
 	{
 
 	}
 	void execute()
 	{
-		OutPut("will execute function:["+m_taskTag+"]");
+		OutPut("start execute function:["+m_taskTag+"]");
 		m_functionTask();
+		OutPut("finish execute function:["+m_taskTag+"]");
 	}
-	bool operator<(const ThreadPoolTask &rls)
+	bool operator>(const ThreadPool::ThreadLevel &rlevel) const
 	{
-		return m_taskLevel < rls.m_taskLevel;
-	}
-	bool operator<(uint32_t level)
-	{
-		return m_taskLevel < level;
-	}
-	bool operator>=(uint32_t level)
-	{
-		return m_taskLevel >= level;
+		return static_cast<uint32_t>(m_taskLevel) > static_cast<uint32_t>(rlevel);
 	}
 private:
-	uint32_t m_taskLevel;
+	ThreadPool::ThreadLevel m_taskLevel;
 	std::string m_taskTag;
 	std::function<void()> m_functionTask;
 };
@@ -107,30 +100,19 @@ void ThreadPool::initPool(uint32_t poolNumber)
 	}
 }
 
-void ThreadPool::enqueueFunc(std::string functionTag, uint32_t urgentLevel, std::function<void()> task)
+void ThreadPool::enqueueFunc(std::string functionTag, ThreadPool::ThreadLevel urgentLevel, std::function<void()> task)
 {
 	pushFuncPri(std::move(functionTag),urgentLevel,std::move(task));
 }
 
-void ThreadPool::pushFuncPri(std::string functionTag, uint32_t urgentLevel, std::function<void()> &&task)
+void ThreadPool::pushFuncPri(std::string functionTag, ThreadPool::ThreadLevel urgentLevel, std::function<void()> &&task)
 {
 	{
 		std::unique_lock<std::mutex> lock(_p->tasks_mutex);
 		if (_p->stop) return;
-		OutPut(_p->threadPoolName + " enqueue task:["+functionTag+"]");
-		// 将任务添加到任务队列
-		for(auto it = _p->tasks.begin(); it != _p->tasks.end(); ++it)
-		{
-			if(*it >= urgentLevel)
-			{
-				_p->tasks.push_back(ThreadPoolTask(urgentLevel,std::move(functionTag),std::move(task)));
-				break;
-			}
-		}
-		if(_p->tasks.empty())
-		{
-			_p->tasks.push_back(ThreadPoolTask(urgentLevel,std::move(functionTag),std::move(task)));
-		}
+		OutPut(_p->threadPoolName + " enqueue task:[" + functionTag + "]" + ", level:[" + std::to_string(static_cast<uint32_t>(urgentLevel)) + "]");
+		auto enqueItor = std::find_if(_p->tasks.cbegin(),_p->tasks.cend(),[urgentLevel](const ThreadPoolTask& taskItem){return taskItem > urgentLevel;});
+		_p->tasks.insert(enqueItor, ThreadPoolTask(urgentLevel,std::move(functionTag),std::move(task)));
 	}
 	_p->condition.notify_one();
 }
