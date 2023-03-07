@@ -60,7 +60,7 @@ public:
 ThreadPool::ThreadPool(uint32_t maxpool, std::string poolName )
 	:_p(std::make_shared<DataPrivate>(std::move(poolName)))
 {
-	initPool(maxpool);
+	initPool(std::min<uint32_t>(5000, maxpool));
 }
 
 ThreadPool::~ThreadPool()

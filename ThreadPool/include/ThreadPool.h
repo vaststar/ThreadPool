@@ -17,7 +17,7 @@ public:
 		Level_Low
 	};
 public:
-	ThreadPool(uint32_t maxpool = 5000, std::string poolName = "default-thread-pool");
+	ThreadPool(uint32_t maxpool = 500, std::string poolName = "default-thread-pool");
 	ThreadPool(ThreadPool &&) = delete;
 	ThreadPool(const ThreadPool &) = delete;
 	ThreadPool& operator=(const ThreadPool &) = delete;
