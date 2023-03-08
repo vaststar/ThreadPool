@@ -1,4 +1,6 @@
+#ifndef _WIN32
 #include "ThreadPool.h"
+#endif
 #include "ThreadPoolUtil.h"
 
 #include <vector>
@@ -6,6 +8,7 @@
 #include <iostream>
 #include <functional>
 
+#ifndef _WIN32
 void threadPool_test_future_api()
 {
 	auto testFunc = [](int i)->int{/*std::this_thread::sleep_for(std::chrono::milliseconds(100));*/ return i*i;};
@@ -37,12 +40,12 @@ void threadPool_test_normal_api()
 		pool.enqueueFunc("urgent_testNormalFunc-"+std::to_string(i),0, std::bind(testFunc,i));
 	}
 }
+#endif
 
 void threadPool_export_util_api()
 {
 	auto testFunc = [](int i){/*std::this_thread::sleep_for(std::chrono::milliseconds(100));*/ std::cout << i*i<<std::endl; };
 	ThreadPoolUtil::initThreadPool(3);
-	std::vector<std::future<int>> test;
 	for (int i = 2000; i < 3000; ++i) {
 		ThreadPoolUtil::createThreadTask(std::bind(testFunc,i), ThreadPoolUtil::ThreadLevel::Level_Normal);
 	}
@@ -53,6 +56,7 @@ void threadPool_export_util_api()
 
 int main(int argc, char* argv[])
 {
+#ifndef _WIN32
 	if(argc >= 2)
 	{
 		if(std::string(argv[1]) == "future")
@@ -68,5 +72,9 @@ int main(int argc, char* argv[])
 			threadPool_export_util_api();
 		}
 	}
+#else
+	threadPool_export_util_api();
+#endif
+
 	return 0;
 }
