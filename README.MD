@@ -2,7 +2,9 @@
 A very nice thread pool in c++20 written by Thomas Zhu.
 
 # Base ThreadPool instructions
-ThreadPool provide a core function of thread pool
+export usage: ThreadPoolUtil, user should use this header to develop
+
+core class: ThreadPool provide a core function of thread pool
 * `#include "ThreadPool.h"`
 * create threadpool object, `ThreadPool pool(4,"testpool");`
 * push your function, `pool.enqueueFunc("test func",0,std::bind(functionname,params));`
