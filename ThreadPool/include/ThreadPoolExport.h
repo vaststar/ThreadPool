@@ -1,9 +1,6 @@
 #ifndef ThreadPoolExport_h__
 #define ThreadPoolExport_h__
 
-#include <string>
-#include <functional>
-
 #ifdef THREADPOOL_DLL
 #ifdef THREADPOOL_LIB
 #define THREADPOOL_EXPORT _declspec(dllexport)

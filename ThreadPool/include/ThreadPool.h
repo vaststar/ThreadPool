@@ -3,9 +3,8 @@
 
 #include <future>
 #include <functional>
-#include "ThreadPoolExport.h"
 
-class THREADPOOL_EXPORT ThreadPool final
+class ThreadPool final
 {
 public:
 	ThreadPool(uint32_t maxpool, const std::string& poolName);
