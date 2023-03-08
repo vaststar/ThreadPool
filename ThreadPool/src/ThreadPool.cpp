@@ -7,47 +7,38 @@
 #include <mutex>
 #include <condition_variable>
 #include <stdexcept>
-#include <iostream>
-#include <ostream>
-#include <sstream>
 
-static void OutPut(std::string messages){std::ostringstream _oss; _oss << messages;std::cout<<_oss.str()<<std::endl;};
 class ThreadPoolTask
 {
 public:
-	ThreadPoolTask(){};
-	ThreadPoolTask(ThreadPool::ThreadLevel taskLevel, std::string taskTag, std::function<void()> functionTask)
+	ThreadPoolTask() = default;
+	ThreadPoolTask(uint32_t taskLevel, const std::string& taskTag, std::function<void()> functionTask)
 		:m_taskLevel(taskLevel),m_taskTag(std::move(taskTag)),m_functionTask(std::move(functionTask))
 	{
-
 	}
 	void execute()
 	{
-		OutPut("start execute function:["+m_taskTag+"]");
 		m_functionTask();
-		OutPut("finish execute function:["+m_taskTag+"]");
 	}
-	bool operator>(const ThreadPool::ThreadLevel &rlevel) const
+	bool operator>(const uint32_t &rlevel) const
 	{
-		return static_cast<uint32_t>(m_taskLevel) > static_cast<uint32_t>(rlevel);
+		return m_taskLevel > rlevel;
 	}
 private:
-	ThreadPool::ThreadLevel m_taskLevel;
+	uint32_t m_taskLevel;
 	std::string m_taskTag;
 	std::function<void()> m_functionTask;
 };
 class ThreadPool::DataPrivate
 {
 public:
-	explicit DataPrivate(std::string poolName)
+	explicit DataPrivate(const std::string& poolName)
 		:stop(false)
-		,threadPoolName(std::move(poolName))
+		,threadPoolName(poolName)
 	{
 
 	}
-	~DataPrivate()
-	{
-	}
+	~DataPrivate() = default;
 public:
 	std::vector< std::thread > workers;
 	std::list<ThreadPoolTask> tasks;
@@ -57,8 +48,8 @@ public:
 	std::string threadPoolName;
 };
 
-ThreadPool::ThreadPool(uint32_t maxpool, std::string poolName )
-	:_p(std::make_shared<DataPrivate>(std::move(poolName)))
+ThreadPool::ThreadPool(uint32_t maxpool, const std::string& poolName )
+	:_p(std::make_shared<DataPrivate>(poolName))
 {
 	initPool(std::min<uint32_t>(5000, maxpool));
 }
@@ -100,17 +91,16 @@ void ThreadPool::initPool(uint32_t poolNumber)
 	}
 }
 
-void ThreadPool::enqueueFunc(std::string functionTag, ThreadPool::ThreadLevel urgentLevel, std::function<void()> task)
+void ThreadPool::enqueueFunc(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> task)
 {
 	pushFuncPri(std::move(functionTag),urgentLevel,std::move(task));
 }
 
-void ThreadPool::pushFuncPri(std::string functionTag, ThreadPool::ThreadLevel urgentLevel, std::function<void()> &&task)
+void ThreadPool::pushFuncPri(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> &&task)
 {
 	{
 		std::unique_lock<std::mutex> lock(_p->tasks_mutex);
 		if (_p->stop) return;
-		OutPut(_p->threadPoolName + " enqueue task:[" + functionTag + "]" + ", level:[" + std::to_string(static_cast<uint32_t>(urgentLevel)) + "]");
 		auto enqueItor = std::find_if(_p->tasks.cbegin(),_p->tasks.cend(),[urgentLevel](const ThreadPoolTask& taskItem){return taskItem > urgentLevel;});
 		_p->tasks.insert(enqueItor, ThreadPoolTask(urgentLevel,std::move(functionTag),std::move(task)));
 	}

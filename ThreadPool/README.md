@@ -1,5 +1,5 @@
 # Thread Pool
 
 # Requirements
-* >= c++11
-* >= cmake3.1
+* >= c++20
+* >= cmake3.11

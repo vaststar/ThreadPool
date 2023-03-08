@@ -1,5 +1,8 @@
-#ifndef ThreadPool_global_h__
-#define ThreadPool_global_h__
+#ifndef ThreadPoolExport_h__
+#define ThreadPoolExport_h__
+
+#include <string>
+#include <functional>
 
 #ifdef THREADPOOL_DLL
 #ifdef THREADPOOL_LIB
@@ -10,4 +13,5 @@
 #else
 #define THREADPOOL_EXPORT 
 #endif
-#endif // ThreadPool_global_h__
+
+#endif //ThreadPoolExport_h__
