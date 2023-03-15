@@ -16,7 +16,7 @@ std::shared_ptr<ThreadPoolControl> ThreadPoolControl::getInstance()
 
 ThreadPoolControl::~ThreadPoolControl()
 {
-    std::lock_guard<std::mutex> lo(m_poolMutex);
+    std::scoped_lock<std::mutex> lo(m_poolMutex);
     m_threadPools.clear();
 }
 
@@ -27,17 +27,17 @@ void ThreadPoolControl::createThreadPool(uint32_t maxpool, const std::string& po
         return;
     }
 
-    std::lock_guard<std::mutex> lo(m_poolMutex);
+    std::scoped_lock<std::mutex> lo(m_poolMutex);
     if (!m_threadPools.contains(poolName))
     {
-        m_threadPools[poolName] = std::make_shared<ThreadPool>(maxpool, poolName);
+        m_threadPools[poolName] = std::make_unique<ThreadPool>(maxpool, poolName);
     }
 }
 
 static void OutPut(std::string messages){std::ostringstream _oss; _oss << messages;std::cout<<_oss.str()<<std::endl;};
 void ThreadPoolControl::createTask(std::function<void()> func, const std::string& functionTag, uint32_t urgentLevel, const std::string& poolName)
 {
-    std::lock_guard<std::mutex> lo(m_poolMutex);
+    std::scoped_lock<std::mutex> lo(m_poolMutex);
     if (auto iter = m_threadPools.find(poolName); iter != m_threadPools.end())
     {
 		OutPut("success: "+poolName + " enqueue task:[" + functionTag + "]" + ", level:[" + std::to_string(urgentLevel) + "]");

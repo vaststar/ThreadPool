@@ -19,7 +19,7 @@ private:
     static std::shared_ptr<ThreadPoolControl> _instance;
 private:
     std::mutex m_poolMutex;
-    std::map<std::string, std::shared_ptr<ThreadPool>> m_threadPools;
+    std::map<std::string, std::unique_ptr<ThreadPool>> m_threadPools;
 public:
     ThreadPoolControl(const ThreadPoolControl &rhs) = delete;
     ThreadPoolControl& operator=(const ThreadPoolControl &rhs) = delete;
