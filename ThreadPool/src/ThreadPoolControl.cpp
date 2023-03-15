@@ -1,10 +1,11 @@
+#include "ThreadPoolControl.h"
+
 #include <thread>
 #include <sstream>
 #include <iostream>
 
-#include "ThreadPoolControl.h"
 #include "ThreadPool.h"
-
+namespace ThreadPoolSpace{
 std::shared_ptr<ThreadPoolControl> ThreadPoolControl::_instance = nullptr;
 std::shared_ptr<ThreadPoolControl> ThreadPoolControl::getInstance()
 {
@@ -48,4 +49,5 @@ void ThreadPoolControl::createTask(std::function<void()> func, const std::string
     {
 		OutPut("falied: " + poolName + " enqueue task:[" + functionTag + "]" + ", level:[" + std::to_string(urgentLevel) + "]");
     }
+}
 }

@@ -7,6 +7,7 @@
 #include <mutex>
 #include <map>
 
+namespace ThreadPoolSpace{
 class ThreadPool;
 class ThreadPoolControl final
 {
@@ -27,4 +28,5 @@ public:
     ThreadPoolControl& operator=(ThreadPoolControl &&rhs) = delete;
     ~ThreadPoolControl();
 };
+}
 #endif // ThreadPoolControl_h__

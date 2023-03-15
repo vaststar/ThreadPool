@@ -4,6 +4,7 @@
 #include <future>
 #include <functional>
 
+namespace ThreadPoolSpace{
 class ThreadPool final
 {
 public:
@@ -40,5 +41,6 @@ auto ThreadPool::enqueueFutureFunc(const std::string& functionTag, uint32_t urge
 	std::future<return_type> res = task->get_future();
 	pushFuncPri(functionTag, urgentLevel, [task] {(*task)();});
 	return res;
+}
 }
 #endif // ThreadPool_h__

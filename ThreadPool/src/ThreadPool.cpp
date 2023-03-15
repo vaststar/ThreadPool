@@ -1,3 +1,5 @@
+#include "ThreadPool.h"
+
 #include <vector>
 #include <list>
 #include <memory>
@@ -6,8 +8,7 @@
 #include <condition_variable>
 #include <stdexcept>
 
-#include "ThreadPool.h"
-
+namespace ThreadPoolSpace{
 class ThreadPoolTask
 {
 public:
@@ -103,4 +104,5 @@ void ThreadPool::pushFuncPri(const std::string& functionTag, uint32_t urgentLeve
 	auto enqueItor = std::find_if(_p->tasks.cbegin(),_p->tasks.cend(),[urgentLevel](const ThreadPoolTask& taskItem){return taskItem > urgentLevel;});
 	_p->tasks.insert(enqueItor, ThreadPoolTask(urgentLevel,functionTag,std::move(task)));
 	_p->condition.notify_one();
+}
 }
