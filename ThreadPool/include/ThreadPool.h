@@ -38,7 +38,7 @@ auto ThreadPool::enqueueFutureFunc(const std::string& functionTag, uint32_t urge
 		);
 	// 获取任务的future
 	std::future<return_type> res = task->get_future();
-	pushFuncPri(std::move(functionTag), urgentLevel, [task] {(*task)();});
+	pushFuncPri(functionTag, urgentLevel, [task] {(*task)();});
 	return res;
 }
 #endif // ThreadPool_h__

@@ -6,8 +6,8 @@
 #include <functional>
 #include <mutex>
 #include <map>
-#include "ThreadPool.h"
 
+class ThreadPool;
 class ThreadPoolControl final
 {
 public:

@@ -1,5 +1,3 @@
-#include "ThreadPool.h"
-
 #include <vector>
 #include <list>
 #include <memory>
@@ -8,12 +6,14 @@
 #include <condition_variable>
 #include <stdexcept>
 
+#include "ThreadPool.h"
+
 class ThreadPoolTask
 {
 public:
 	ThreadPoolTask() = default;
 	ThreadPoolTask(uint32_t taskLevel, const std::string& taskTag, std::function<void()> functionTask)
-		:m_taskLevel(taskLevel),m_taskTag(std::move(taskTag)),m_functionTask(std::move(functionTask))
+		:m_taskLevel(taskLevel),m_taskTag(taskTag),m_functionTask(std::move(functionTask))
 	{
 	}
 	void execute()
@@ -59,8 +59,8 @@ ThreadPool::~ThreadPool()
 	{
 		std::unique_lock<std::mutex> lock(_p->tasks_mutex);
 		_p->stop = true;
+		_p->condition.notify_all();
 	}
-	_p->condition.notify_all();
 	for (std::thread &worker : _p->workers) {
 		worker.join();
 	}
@@ -93,16 +93,14 @@ void ThreadPool::initPool(uint32_t poolNumber)
 
 void ThreadPool::enqueueFunc(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> task)
 {
-	pushFuncPri(std::move(functionTag),urgentLevel,std::move(task));
+	pushFuncPri(functionTag,urgentLevel,std::move(task));
 }
 
 void ThreadPool::pushFuncPri(const std::string& functionTag, uint32_t urgentLevel, std::function<void()> &&task)
 {
-	{
-		std::unique_lock<std::mutex> lock(_p->tasks_mutex);
-		if (_p->stop) return;
-		auto enqueItor = std::find_if(_p->tasks.cbegin(),_p->tasks.cend(),[urgentLevel](const ThreadPoolTask& taskItem){return taskItem > urgentLevel;});
-		_p->tasks.insert(enqueItor, ThreadPoolTask(urgentLevel,std::move(functionTag),std::move(task)));
-	}
+	std::unique_lock<std::mutex> lock(_p->tasks_mutex);
+	if (_p->stop) return;
+	auto enqueItor = std::find_if(_p->tasks.cbegin(),_p->tasks.cend(),[urgentLevel](const ThreadPoolTask& taskItem){return taskItem > urgentLevel;});
+	_p->tasks.insert(enqueItor, ThreadPoolTask(urgentLevel,functionTag,std::move(task)));
 	_p->condition.notify_one();
 }

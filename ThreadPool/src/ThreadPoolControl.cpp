@@ -1,8 +1,9 @@
 #include <thread>
-
-#include "ThreadPoolControl.h"
 #include <sstream>
 #include <iostream>
+
+#include "ThreadPoolControl.h"
+#include "ThreadPool.h"
 
 std::shared_ptr<ThreadPoolControl> ThreadPoolControl::_instance = nullptr;
 std::shared_ptr<ThreadPoolControl> ThreadPoolControl::getInstance()
