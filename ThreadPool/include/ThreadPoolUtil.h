@@ -13,8 +13,8 @@ namespace ThreadPoolUtil
 		Level_Normal,
 		Level_Low
 	};
-    static const std::string DefaultThreadPoolName = "default-thread-pool";
-    static const std::string DefaultFunctionTag = "default-function-tag";
+    inline constexpr auto DefaultThreadPoolName = "default-thread-pool";
+    inline constexpr auto DefaultFunctionTag = "default-function-tag";
     THREADPOOL_EXPORT void initThreadPool(uint32_t maxThreadNumber = 500, const std::string& threadPoolName = DefaultThreadPoolName);
     THREADPOOL_EXPORT void createThreadTask(std::function<void()> func, ThreadLevel urgentLevel = ThreadLevel::Level_Normal, const std::string& poolName = DefaultThreadPoolName, const std::string& functionTag = DefaultFunctionTag);
 }
