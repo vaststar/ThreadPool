@@ -16,11 +16,12 @@ core class: ThreadPool provide a core function of thread pool
 
 # Install
 * make and cd in `build` dir
-* run commond: `cmake .. && make && make install`
+* run command: `cmake .. && make && make install`
 
 # Test
 * make and cd in `build` dir
-* run commond: `cmake .. && make && ctest -V`
+* for cmake test, run command: `cmake .. && make && ctest -V`
+* for catch2 test, run command: `cmake .. && make` and run `testThreadPool_catch2`
 
 # Usage
 * firstly, link library in your project-set

@@ -25,7 +25,7 @@ private:
 	void pushFuncPri(const std::string& functionTag, uint32_t urgentLevel, std::function<void()>&&);
 private:
 	class DataPrivate;
-	std::shared_ptr<DataPrivate> _p;
+	std::unique_ptr<DataPrivate> _p;
 };
 
 template<typename Fun, typename... Args>

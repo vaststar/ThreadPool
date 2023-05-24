@@ -50,7 +50,7 @@ public:
 };
 
 ThreadPool::ThreadPool(uint32_t maxpool, const std::string& poolName )
-	:_p(std::make_shared<DataPrivate>(poolName))
+	:_p(std::make_unique<DataPrivate>(poolName))
 {
 	initPool(std::min<uint32_t>(5000, maxpool));
 }
