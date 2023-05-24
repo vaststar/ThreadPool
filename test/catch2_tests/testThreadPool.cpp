@@ -14,7 +14,7 @@
 void threadPool_test_future_api()
 {
 	auto testFunc = [](int i)->int{/*std::this_thread::sleep_for(std::chrono::milliseconds(100));*/ return i*i;};
-	ThreadPool pool(3,"future-mode");
+	ThreadPoolSpace::ThreadPool pool(3,"future-mode");
 	//test future mode
 	std::vector<std::future<int>> test;
 	for (int i = 0; i < 200; ++i) {
@@ -32,7 +32,7 @@ void threadPool_test_future_api()
 void threadPool_test_normal_api()
 {
 	auto testFunc = [](int i){/*std::this_thread::sleep_for(std::chrono::milliseconds(100));*/ std::cout << i*i<<std::endl; };
-	ThreadPool pool(3,"mormal-mode");
+	ThreadPoolSpace::ThreadPool pool(3,"mormal-mode");
 	//test future mode
 	std::vector<std::future<int>> test;
 	for (int i = 1000; i < 1200; ++i) {
