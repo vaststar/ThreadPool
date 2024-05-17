@@ -12,7 +12,7 @@ core class: ThreadPool provide a core function of thread pool
 
 # Requirement
 * >= c++20
-* >= cmake3.1
+* >= cmake3.24
 
 # Install
 * make and cd in `build` dir

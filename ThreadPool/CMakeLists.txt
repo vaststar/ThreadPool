@@ -47,7 +47,7 @@ endif(WIN32)
 target_include_directories(${MODULE_NAME} PUBLIC 
                                 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                 $<INSTALL_INTERFACE:${MODULE_NAME}/include>
-                                PRIVATE src
+                                PRIVATE src  ${PROJECT_BINARY_DIR}
 )
 
 ## install 
