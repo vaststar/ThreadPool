@@ -3,7 +3,7 @@
 
 #include <string>
 #include <functional>
-#include "ThreadPoolExport.h"
+#include <ThreadPool/ThreadPoolExport.h>
 
 namespace ThreadPoolUtil
 {

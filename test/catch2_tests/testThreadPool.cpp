@@ -3,7 +3,7 @@
 #ifndef _WIN32
 #include "ThreadPool.h"
 #endif
-#include "ThreadPoolUtil.h"
+#include "ThreadPool/ThreadPoolUtil.h"
 
 #include <vector>
 #include <string>
